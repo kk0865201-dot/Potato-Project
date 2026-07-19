@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    // Auto-login: if a valid token is stored, skip the login screen.
+    // Auto-login: if a Firebase user is still signed in, skip the login screen.
     final isLoggedIn = await context.read<AuthProvider>().tryAutoLogin();
     if (!mounted) return;
 

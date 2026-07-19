@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirmed != true || !mounted) return;
 
-    // Revokes the Sanctum token server-side and clears the stored session.
+    // Sign out of Firebase and clear the in-memory session/token.
     context.read<FavoritesProvider>().reset();
     await context.read<AuthProvider>().logout();
     if (!mounted) return;

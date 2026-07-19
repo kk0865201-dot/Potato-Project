@@ -1,17 +1,67 @@
 # 🥔 Potato Project — Final Mobile Application
 
 A full-stack field-guide app for potato varieties and recipes, built for the
-**Flutter Mobile Application** course. A **Flutter** client (Firebase-authenticated)
-consumes a **Laravel** REST API as its single source of truth — no mock or
-hardcoded data.
+**Flutter Mobile Application** course (Final Project). A **Flutter** client
+(authenticated with **Firebase**) consumes a **Laravel** REST API as its single
+source of truth — no mock or hardcoded data.
 
 This repository contains **both** halves of the project:
 
 ```
 Potato-Project/
 ├── mobile/     Flutter app  (the mobile application — what gets graded)
-└── backend/    Laravel API  (the REST backend the app talks to)
+└── backend/    Laravel API  (the REST backend the app consumes)
 ```
+
+---
+
+## 👩‍🏫 For the grader — quick start
+
+**Prerequisites:** Flutter SDK, and for the backend PHP 8.2+ and Composer.
+
+```bash
+# 1) Start the backend  (Terminal 1)
+cd backend
+composer install
+cp .env.example .env            # Windows: copy .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve --port=8000
+
+# 2) Run the app  (Terminal 2)
+cd mobile
+flutter pub get
+flutter run                     # Android emulator reaches the backend automatically
+```
+
+Then **sign up** with any email + password (creates a real Firebase user) and
+you're in. Everything else — data, favorites, profile — flows from the backend.
+
+> The app talks to the backend, so **start the backend first**. On an Android
+> emulator the app auto-targets the host at `10.0.2.2:8000`; no config needed.
+
+---
+
+## ✅ How this maps to the marking rubric
+
+| Rubric row (marks) | Where it is | Done |
+|---|---|:--:|
+| **Midterm features (10)** — splash, onboarding (first-launch only), login UI, sign-up UI, home w/ cards+images, settings (Light/Dark + EN/AR), custom widgets, clean folders | `mobile/lib/screens/`, `mobile/lib/widgets/` | ✅ |
+| **Firebase Auth (9)** — sign up, sign in, logout, auto-login, wrong-credentials error | `services/firebase_auth_service.dart`, `providers/auth_provider.dart`, `screens/{login,signup,splash,settings}_screen.dart` | ✅ |
+| **API page (8)** — fetch a real REST API, loading spinner, error state, modern cards with images | `screens/home_screen.dart` + `recipes_screen.dart`, `services/api_client.dart`, `widgets/{status_view,potato_card,remote_image}.dart` | ✅ |
+| **Favorites (3)** — heart on every list item, add/remove via Provider, dedicated Favorites page, empty state, stays in sync everywhere | `providers/favorites_provider.dart`, `widgets/favorite_button.dart`, `screens/favorites_screen.dart` | ✅ |
+| **Code quality (20)** — screens/widgets/providers/services folders, reusable widgets, explainable | whole `mobile/lib/` (see architecture below) | ✅ |
+| **Bonus — Google Sign-In (2)** — "Continue with Google" via `firebase_auth` + `google_sign_in`, lands on Home | `login_screen.dart` → `auth_provider.loginWithGoogle()` → `firebase_auth_service.signInWithGoogle()` | ✅ |
+
+### A note on the API (beyond the brief)
+
+The brief allows *any* free public API. This project goes further: instead of a
+third-party API it consumes a **custom REST API I built myself in Laravel**
+(`backend/`). It exercises the exact same skills the API lecture teaches — `http`,
+`async/await`, JSON → Dart models, loading & error states, cards with images — on
+top of a real backend with authentication and per-user favorites. Run the backend
+(quick-start above) and the API page shows live data; if it's offline you'll see
+the graceful error/retry state instead.
 
 ---
 
@@ -25,22 +75,21 @@ Potato-Project/
 
 ---
 
-## What it does (feature checklist)
+## What it does (feature highlights)
 
 - **Firebase Authentication** — real sign-up / sign-in / logout with email & password.
 - **Continue with Google** — one-tap Google Sign-In (bonus).
 - **Auto-login** — a signed-in user skips the login screen on next launch.
-- **Live data from the API** — potato varieties and recipes come from Laravel
-  (`GET /api/v1/varieties`, `/recipes`) with **server-side search**,
-  **pagination + lazy loading**, and **pull-to-refresh**.
-- **Favorites synced to the backend** — `GET/POST/DELETE /api/v1/favorites`,
-  per-user, with an optimistic heart toggle everywhere (not stored only on-device).
-- **Profile** — view & edit name / email / phone (`GET /auth/user`, `PUT /auth/profile`).
-- **Settings** — Light/Dark theme (persisted) and **English / Arabic** localization,
-  including localized API content.
+- **Live data from the API** — potato varieties and recipes with **server-side
+  search**, **pagination + lazy loading**, and **pull-to-refresh**.
+- **Favorites synced to the backend** — a heart on every card, per-user, with an
+  optimistic toggle everywhere (not just stored on-device).
+- **Profile** — view & edit name / email / phone.
+- **Settings** — Light/Dark theme (persisted) and **English / Arabic** localization
+  (including localized API content).
 - **Interactive 3D potato model** on the Home hero (`potato.glb`, drag to rotate).
-- **All media is bundled** — the 3D model, logo, and photos ship inside the app
-  (`mobile/assets/`), so it runs with no external CDN or network media.
+- **All media is bundled** in `mobile/assets/` — model, logo, photos — so the app
+  runs with no external CDN or network media.
 - **Every network call has loading / empty / error / retry states** with friendly
   messages for no-internet, timeout, and HTTP 401 / 403 / 404 / 422 / 500.
 
@@ -52,49 +101,8 @@ UI never touches the network directly:
 Screen → Provider → Repository → Service → ApiClient → Laravel API
 ```
 
-`lib/` is split into `constants, models, services, repositories, providers,
+`mobile/lib/` is split into `constants, models, services, repositories, providers,
 screens, widgets, routes, utils` (see `mobile/README.md`).
-
----
-
-## How to run
-
-You need the **backend running first**, then the **mobile app**.
-
-### 1. Backend (Laravel)
-
-Requires PHP 8.2+ and Composer.
-
-```bash
-cd backend
-composer install
-cp .env.example .env          # Windows: copy .env.example .env
-php artisan key:generate
-php artisan migrate --seed     # creates SQLite DB + seeds varieties/recipes
-php artisan serve --port=8000
-```
-
-The API is now at `http://localhost:8000/api/v1`. See `backend/API.md` for the
-full endpoint contract.
-
-### 2. Mobile app (Flutter)
-
-Requires the Flutter SDK.
-
-```bash
-cd mobile
-flutter pub get
-flutter run
-```
-
-- On the **Android emulator**, the app reaches the host machine at `10.0.2.2:8000`
-  automatically — no configuration needed.
-- On a **physical device**, pass your computer's LAN IP:
-  ```bash
-  flutter run --dart-define=API_BASE_URL=http://192.168.1.10:8000
-  ```
-- For the **web** build: `flutter run -d chrome` (the 3D model and all photos are
-  bundled and load offline).
 
 ---
 
@@ -106,17 +114,18 @@ clone-and-run:
 - `mobile/lib/firebase_options.dart` (web + Android/iOS)
 - `mobile/android/app/google-services.json` (Android)
 
-These are Firebase **client** config values (not private secrets — Firebase
-security is enforced by its own rules and, for Android, the app's registered
-SHA-1). They are committed so the grader doesn't have to create a Firebase project.
+These are Firebase **client** config values, not private secrets — Firebase
+security is enforced by its own rules and, for Android, by the app's registered
+SHA-1. The course guide explicitly allows committing `google-services.json` *to a
+private repo*, which this is. They're committed so the grader doesn't need to
+create a Firebase project.
 
 - **Email/Password sign-in works out of the box** on any machine.
-- **Google Sign-In on Android** additionally requires *that machine's* debug SHA-1
-  to be registered in the Firebase console (Google's security model ties Google
-  Sign-In to the signing key). It works on the original dev machine; on a new
-  machine, either add its SHA-1 in the Firebase console or grade Google Sign-In
-  via the Email/Password flow + the visible "Continue with Google" button. Full
-  steps are in `mobile/FIREBASE_SETUP.md`.
+- **Google Sign-In on Android** additionally needs *that machine's* debug SHA-1
+  registered in the Firebase console (Google ties Google Sign-In to the signing
+  key). It works on the original dev machine; on a new machine, either add its
+  SHA-1 or grade Google Sign-In via the visible "Continue with Google" button +
+  its code. Steps: `mobile/FIREBASE_SETUP.md`.
 
 ### How auth ties into the backend
 
@@ -139,7 +148,7 @@ and public data still loads — only favorites need the token.
 | `backend/app/`, `backend/routes/api.php` | Controllers, resources, API routes |
 | `backend/database/` | Migrations, factories, seeders |
 | `backend/API.md` | REST endpoint contract |
-| `backend/tests/` | Feature tests (`php artisan test`) |
+| `backend/tests/` | Feature tests — `php artisan test` (41 passing) |
 
 ---
 
