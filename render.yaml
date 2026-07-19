@@ -1,0 +1,36 @@
+# Render Blueprint — one-click deploy of the Laravel API.
+# In the Render dashboard: New ► Blueprint ► pick this repo ► Apply.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: potato-api-kk0865201        # → https://potato-api-kk0865201.onrender.com
+    runtime: docker
+    rootDir: backend                  # the Laravel app lives in backend/
+    dockerfilePath: ./Dockerfile      # relative to rootDir
+    plan: free
+    region: oregon
+    healthCheckPath: /up              # Laravel's built-in health endpoint
+    autoDeploy: true
+    envVars:
+      - key: APP_KEY
+        value: base64:Z+93kUhF1AbwS0ML2xMRfaCrvV0j5auZhOBl+F3TatA=
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        value: https://potato-api-kk0865201.onrender.com
+      - key: APP_LOCALE
+        value: en
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /app/database/database.sqlite
+      - key: CACHE_STORE
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr              # logs stream to the Render dashboard

@@ -17,10 +17,29 @@ Potato-Project/
 
 ## 👩‍🏫 For the grader — quick start
 
-**Prerequisites:** Flutter SDK, and for the backend PHP 8.2+ and Composer.
+The app is preconfigured to use a **live, hosted backend**, so all you need is Flutter:
 
 ```bash
-# 1) Start the backend  (Terminal 1)
+cd mobile
+flutter pub get
+flutter run
+```
+
+Then **sign up** with any email + password (creates a real Firebase user) and you're
+in — varieties, recipes, favorites and profile all load from the live API. No backend
+setup required.
+
+> ⏳ **First load may take ~50s** while the free hosting tier wakes the backend from
+> idle; it's instant afterwards. Prefer to run everything yourself? See
+> **[Run the backend locally](#run-the-backend-locally)**.
+
+### Run the backend locally
+
+*(Optional — the app already points at the live API above.)* Requires PHP 8.3+ and
+Composer.
+
+```bash
+# Terminal 1 — the API
 cd backend
 composer install
 cp .env.example .env            # Windows: copy .env.example .env
@@ -28,17 +47,14 @@ php artisan key:generate
 php artisan migrate --seed
 php artisan serve --port=8000
 
-# 2) Run the app  (Terminal 2)
+# Terminal 2 — the app, pointed at your local API
 cd mobile
 flutter pub get
-flutter run                     # Android emulator reaches the backend automatically
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000   # Android emulator
+# (web / iOS simulator: use http://localhost:8000)
 ```
 
-Then **sign up** with any email + password (creates a real Firebase user) and
-you're in. Everything else — data, favorites, profile — flows from the backend.
-
-> The app talks to the backend, so **start the backend first**. On an Android
-> emulator the app auto-targets the host at `10.0.2.2:8000`; no config needed.
+Deploying your own copy of the backend? See **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 
 ---
 
@@ -57,11 +73,11 @@ you're in. Everything else — data, favorites, profile — flows from the backe
 
 The brief allows *any* free public API. This project goes further: instead of a
 third-party API it consumes a **custom REST API I built myself in Laravel**
-(`backend/`). It exercises the exact same skills the API lecture teaches — `http`,
-`async/await`, JSON → Dart models, loading & error states, cards with images — on
-top of a real backend with authentication and per-user favorites. Run the backend
-(quick-start above) and the API page shows live data; if it's offline you'll see
-the graceful error/retry state instead.
+(`backend/`), **deployed live** so it's reachable like any public API. It exercises
+the exact same skills the API lecture teaches — `http`, `async/await`, JSON → Dart
+models, loading & error states, cards with images — on top of a real backend with
+authentication and per-user favorites. The app hits the live API by default; if it's
+ever unreachable you'll see the graceful error/retry state instead.
 
 ---
 
@@ -71,7 +87,7 @@ the graceful error/retry state instead.
 |-----------|-------|
 | Mobile    | Flutter 3 / Dart 3, Provider, Repository + Service layers, `http`, `cached_network_image`, `easy_localization`, `model_viewer_plus` |
 | Auth      | **Firebase Authentication** (email/password + **Google Sign-In**), bridged to the backend for per-user data |
-| Backend   | Laravel 12, Sanctum, SQLite, standardized JSON API under `/api/v1` |
+| Backend   | Laravel 13, Sanctum, SQLite, standardized JSON API under `/api/v1`, Docker-deployed |
 
 ---
 
@@ -149,6 +165,8 @@ and public data still loads — only favorites need the token.
 | `backend/database/` | Migrations, factories, seeders |
 | `backend/API.md` | REST endpoint contract |
 | `backend/tests/` | Feature tests — `php artisan test` (41 passing) |
+| `backend/Dockerfile`, `render.yaml` | Container + one-click deploy config for the live API |
+| `DEPLOYMENT.md` | How the backend is deployed (Render, free tier) |
 
 ---
 

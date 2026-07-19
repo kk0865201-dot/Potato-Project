@@ -1,25 +1,24 @@
-import 'dart:io' show Platform;
-
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 /// Central place for everything related to reaching the Laravel backend.
 class ApiConstants {
   ApiConstants._();
 
-  /// Override at build time for a physical device:
-  /// flutter run --dart-define=API_BASE_URL=http://192.168.1.10:8000
+  /// The live, deployed backend. This is the DEFAULT so the app runs with zero
+  /// setup — `flutter run` shows real data without starting a server locally.
+  static const String _productionBaseUrl =
+      'https://potato-api-kk0865201.onrender.com';
+
+  /// Optional override to point at a LOCAL backend instead, e.g.:
+  ///   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000   (Android emulator)
+  ///   flutter run --dart-define=API_BASE_URL=http://localhost:8000  (web / iOS sim)
   static const String _definedBaseUrl = String.fromEnvironment('API_BASE_URL');
 
-  static String get baseUrl {
-    if (_definedBaseUrl.isNotEmpty) return _definedBaseUrl;
-    if (kIsWeb) return 'http://localhost:8000';
-    // Android emulators reach the host machine through 10.0.2.2.
-    if (Platform.isAndroid) return 'http://10.0.2.2:8000';
-    return 'http://localhost:8000';
-  }
+  static String get baseUrl =>
+      _definedBaseUrl.isNotEmpty ? _definedBaseUrl : _productionBaseUrl;
 
   static String get apiUrl => '$baseUrl/api/v1';
 
-  static const Duration requestTimeout = Duration(seconds: 15);
+  /// Generous timeout: the free host can take up to ~50s to wake from idle on
+  /// the first request of a session (responses are instant afterwards).
+  static const Duration requestTimeout = Duration(seconds: 60);
   static const int defaultPerPage = 10;
 }

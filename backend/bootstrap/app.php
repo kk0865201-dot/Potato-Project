@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind a platform proxy (Render/Railway/etc.) that terminates TLS,
+        // trust X-Forwarded-* so Laravel generates correct https:// URLs.
+        $middleware->trustProxies(at: '*');
+
         // Localise API responses from the client's Accept-Language header.
         $middleware->api(append: [
             \App\Http\Middleware\SetLocale::class,

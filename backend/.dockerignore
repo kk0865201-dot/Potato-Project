@@ -1,0 +1,17 @@
+# Keep the build context small and free of local/runtime files.
+.git
+.gitignore
+.gitattributes
+vendor
+node_modules
+.env
+.env.*
+database/*.sqlite
+database/*.sqlite-journal
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+tests
+.phpunit.result.cache
+README.md
