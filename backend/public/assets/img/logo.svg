@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Potato logo">
+  <defs>
+    <radialGradient id="lg" cx="38%" cy="32%" r="75%">
+      <stop offset="0%" stop-color="#d9a960"/>
+      <stop offset="55%" stop-color="#b07c46"/>
+      <stop offset="100%" stop-color="#8c5e32"/>
+    </radialGradient>
+  </defs>
+  <path fill="url(#lg)" stroke="#6e4a26" stroke-width="2"
+    d="M20 14c10-6 24-4 28 6 4 9-1 17 2 24 3 7-4 14-14 14-9 0-13-4-20-6C8 49 4 41 6 32 8 22 12 18 20 14Z"/>
+  <!-- eyes -->
+  <g fill="#5e3f21">
+    <ellipse cx="24" cy="26" rx="2.4" ry="1.4" transform="rotate(-20 24 26)"/>
+    <ellipse cx="38" cy="22" rx="2.2" ry="1.3" transform="rotate(15 38 22)"/>
+    <ellipse cx="42" cy="38" rx="2.4" ry="1.4" transform="rotate(-10 42 38)"/>
+    <ellipse cx="26" cy="42" rx="2.1" ry="1.3" transform="rotate(25 26 42)"/>
+    <ellipse cx="32" cy="33" rx="1.8" ry="1.1"/>
+  </g>
+  <!-- sprout -->
+  <g stroke="#5a9e4f" stroke-width="2.4" fill="#7fae5f" stroke-linecap="round">
+    <path d="M38 22 q3 -8 9 -9" fill="none"/>
+    <ellipse cx="48" cy="12" rx="3.6" ry="2.2" transform="rotate(40 48 12)" stroke="none"/>
+  </g>
+  <!-- highlight -->
+  <ellipse cx="24" cy="24" rx="6" ry="3.5" fill="#fff" opacity="0.18" transform="rotate(-25 24 24)"/>
+</svg>

@@ -1,0 +1,27 @@
+# Root ignore. Each subproject (mobile/, backend/) also has its own .gitignore
+# which git applies to that folder, so Flutter build output and Laravel vendor/
+# are already excluded there. These are OS/editor + safety-net entries.
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Secrets / local env (never commit)
+**/.env
+**/auth.json
+
+# Dependency & build output (belt-and-braces; also covered per-subproject)
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins-dependencies
+backend/vendor/
+backend/node_modules/
+backend/database/*.sqlite
+backend/database/*.sqlite-journal

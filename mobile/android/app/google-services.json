@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "561977644668",
+    "project_id": "khal24-potato-project",
+    "storage_bucket": "khal24-potato-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561977644668:android:148ad1f86df39b2f855bf9",
+        "android_client_info": {
+          "package_name": "com.example.project_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "561977644668-uh7ko88ud27kc5pvtq0rq4r5h16ik84g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.project_1",
+            "certificate_hash": "bf8ede0ef4d35438edd9981d58156ab8f721ea36"
+          }
+        },
+        {
+          "client_id": "561977644668-dk9pges83ltd1vjb151kpg7h13loptu3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMI0uGqD53xBusSFHdvH5seOx7PFm1nZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "561977644668-dk9pges83ltd1vjb151kpg7h13loptu3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "561977644668-9v30aptlmf1a7o5m5e72qrckgbtnga39.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.project1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
