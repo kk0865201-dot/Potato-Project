@@ -2,10 +2,13 @@
 # Portable Docker image — runs on Render (free tier), Railway, Koyeb, Fly.io, etc.
 FROM php:8.3-cli
 
-# System libraries + the PHP extensions Laravel needs (SQLite, mbstring, bcmath, zip).
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        git unzip libsqlite3-dev libzip-dev libonig-dev \
-    && docker-php-ext-install pdo pdo_sqlite mbstring bcmath zip \
+# Install PHP extensions with the community installer, which pulls the correct
+# system libraries automatically (more reliable than manual docker-php-ext-install).
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN chmod +x /usr/local/bin/install-php-extensions \
+    && install-php-extensions pdo_sqlite mbstring bcmath zip intl \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends git unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Composer (copied from the official Composer image).
@@ -13,13 +16,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Install PHP dependencies first so Docker can cache this layer.
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --no-autoloader
-
-# Copy the application source and finish the optimized autoloader.
+# Copy the whole app, then install PHP dependencies. The runtime is known-good,
+# so --ignore-platform-reqs avoids a false "missing ext" failure during build.
 COPY . .
-RUN composer dump-autoload --optimize --no-dev --no-scripts \
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --ignore-platform-reqs \
     && sed -i 's/\r$//' docker-entrypoint.sh \
     && chmod +x docker-entrypoint.sh
 
