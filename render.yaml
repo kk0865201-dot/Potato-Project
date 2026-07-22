@@ -4,12 +4,9 @@
 services:
   - type: web
     name: potato-api-kk0865201        # → https://potato-api-kk0865201.onrender.com
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile   # both paths are relative to the repo root
-    dockerContext: ./backend               # the Laravel app lives in backend/
+    runtime: docker                   # uses ./Dockerfile at the repo root (default)
     plan: free
     region: oregon
-    healthCheckPath: /up              # Laravel's built-in health endpoint
     autoDeploy: true
     envVars:
       - key: APP_KEY

@@ -1,9 +1,9 @@
 # Laravel API for the Potato Project.
-# Portable Docker image — runs on Render (free tier), Railway, Koyeb, Fly.io, etc.
+# Lives at the repo ROOT so there is no subdirectory path ambiguity for the host
+# to resolve — the build context is the repo and the app source is in backend/.
 FROM php:8.3-cli
 
-# Install PHP extensions with the community installer, which pulls the correct
-# system libraries automatically (more reliable than manual docker-php-ext-install).
+# Install PHP extensions with the community installer (pulls the right system libs).
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions \
     && install-php-extensions pdo_sqlite mbstring bcmath zip intl \
@@ -16,9 +16,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copy the whole app, then install PHP dependencies. The runtime is known-good,
-# so --ignore-platform-reqs avoids a false "missing ext" failure during build.
-COPY . .
+# The Laravel app lives in backend/ — copy just that into the image.
+COPY backend/ /app/
+
+# Install PHP dependencies. Runtime is known-good, so skip the platform check.
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --ignore-platform-reqs \
     && sed -i 's/\r$//' docker-entrypoint.sh \
     && chmod +x docker-entrypoint.sh

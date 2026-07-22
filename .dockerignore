@@ -1,0 +1,14 @@
+# Build context is the repo root; keep it small and free of the mobile app,
+# local dependencies, and runtime files.
+.git
+mobile
+*.md
+backend/vendor
+backend/node_modules
+backend/.env
+backend/.env.*
+backend/database/*.sqlite
+backend/database/*.sqlite-journal
+backend/storage/logs/*.log
+backend/tests
+backend/.phpunit.result.cache
