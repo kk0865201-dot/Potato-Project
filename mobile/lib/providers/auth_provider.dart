@@ -81,7 +81,11 @@ class AuthProvider extends ChangeNotifier {
       await _bridgeToBackend(firebaseUser, nameHint: nameHint);
       _status = AuthStatus.authenticated;
       notifyListeners();
-    } on AuthException {
+    } catch (_) {
+      // Whatever went wrong — an auth error, a cancelled picker, or an
+      // unexpected platform error (e.g. an unsupported call on web) — never
+      // leave the UI stuck on the spinner. Reset to unauthenticated and
+      // rethrow so the caller can surface its message.
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       rethrow;
@@ -113,7 +117,14 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await _firebase.signOut();
+    // Resilient by design: even if the Firebase sign-out call fails or stalls,
+    // we still drop the local session and token so the app returns to a
+    // logged-out state (the UI navigates back to login off the back of this).
+    try {
+      await _firebase.signOut();
+    } catch (_) {
+      // Ignore — clearing the local session below is what matters.
+    }
     _apiClient.token = null;
     _user = null;
     _status = AuthStatus.unauthenticated;

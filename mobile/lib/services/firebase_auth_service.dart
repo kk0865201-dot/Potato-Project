@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../constants/firebase_config.dart';
@@ -64,9 +65,21 @@ class FirebaseAuthService {
     }
   }
 
-  /// "Continue with Google" — the Firebase + google_sign_in flow.
+  /// "Continue with Google" — Firebase + Google Sign-In.
+  ///
+  /// The web and mobile paths differ on purpose: `google_sign_in` 7.x does
+  /// **not** support programmatic `authenticate()` on the web (it expects a
+  /// rendered Google button), so calling it there throws `UnsupportedError`.
+  /// On web we use Firebase's own Google popup instead — no `google_sign_in`
+  /// session involved. On mobile we use `google_sign_in` and exchange its ID
+  /// token for a Firebase credential.
   Future<User> signInWithGoogle() async {
     try {
+      if (kIsWeb) {
+        final result = await _auth.signInWithPopup(GoogleAuthProvider());
+        return result.user!;
+      }
+
       await _ensureGoogleReady();
 
       // Trigger the interactive Google account chooser.
@@ -78,23 +91,46 @@ class FirebaseAuthService {
       final result = await _auth.signInWithCredential(credential);
       return result.user!;
     } on GoogleSignInException catch (e) {
-      // The user closed the picker — not a real error.
+      // The user closed the native picker — not a real error.
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw const AuthException('', cancelled: true);
       }
       throw const AuthException('Google sign-in failed. Please try again.');
     } on FirebaseAuthException catch (e) {
+      // The user dismissed the web popup — treat as a no-op, not an error.
+      if (_isPopupCancellation(e.code)) {
+        throw const AuthException('', cancelled: true);
+      }
       throw AuthException(_messageFor(e));
+    } catch (_) {
+      // Any other platform/runtime error (e.g. an unsupported-platform call):
+      // surface a friendly message so the UI never hangs on an uncaught error.
+      throw const AuthException('Google sign-in failed. Please try again.');
     }
   }
 
   Future<void> signOut() async {
     await _auth.signOut();
-    try {
-      await GoogleSignIn.instance.signOut();
-    } catch (_) {
-      // google_sign_in may never have been initialized (email/password user).
+    // Only the mobile google_sign_in flow holds a session to clear. On web we
+    // use Firebase's popup (there is no google_sign_in session), and calling
+    // signOut() there — or before initialize() — can stall or throw, so guard
+    // it and never let it block the Firebase sign-out above.
+    if (!kIsWeb && _googleReady) {
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (_) {
+        // Best-effort — a Google sign-out failure must not block logout.
+      }
     }
+  }
+
+  /// Web popup dismissals that Firebase reports as errors but we treat as
+  /// user cancellations (a no-op), not failures worth surfacing.
+  bool _isPopupCancellation(String code) {
+    return code == 'popup-closed-by-user' ||
+        code == 'cancelled-popup-request' ||
+        code == 'web-context-cancelled' ||
+        code == 'user-cancelled';
   }
 
   /// google_sign_in 7.x requires a one-time initialize() before use.
