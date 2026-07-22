@@ -1,7 +1,8 @@
 # Laravel API for the Potato Project.
 # Lives at the repo ROOT so there is no subdirectory path ambiguity for the host
 # to resolve — the build context is the repo and the app source is in backend/.
-FROM php:8.3-cli
+# PHP 8.4: the locked deps (Symfony 8) use 8.4-only syntax, so 8.3 fails at runtime.
+FROM php:8.4-cli
 
 # Install PHP extensions with the community installer (pulls the right system libs).
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
