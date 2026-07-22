@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\Media;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ class VarietyResource extends JsonResource
             'best_for' => $this->tr('best_for'),
             'origin' => $this->tr('origin'),
             'rating' => (float) $this->rating,
-            'image_url' => asset($this->image),
+            'image_url' => Media::url($this->image),
             'image_alt' => $this->image_alt,
             'featured' => $this->featured,
         ];

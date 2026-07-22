@@ -104,8 +104,9 @@ ever unreachable you'll see the graceful error/retry state instead.
 - **Settings** — Light/Dark theme (persisted) and **English / Arabic** localization
   (including localized API content).
 - **Interactive 3D potato model** on the Home hero (`potato.glb`, drag to rotate).
-- **All media is bundled** in `mobile/assets/` — model, logo, photos — so the app
-  runs with no external CDN or network media.
+- **Media comes from the API** — potato photos and the 3D model are fetched from
+  the backend at runtime (served under `/api/v1/media/...` with CORS so it works
+  on web + the 3D WebView). Only the app's own logo and UI translations are bundled.
 - **Every network call has loading / empty / error / retry states** with friendly
   messages for no-internet, timeout, and HTTP 401 / 403 / 404 / 422 / 500.
 
@@ -158,7 +159,8 @@ and public data still loads — only favorites need the token.
 | Path | What's inside |
 |------|----------------|
 | `mobile/lib/` | App source (clean architecture layers) |
-| `mobile/assets/` | Bundled media: `models/potato.glb`, `photos/*.jpg`, `images/logo.gif`, `translations/{en,ar}.json` |
+| `mobile/assets/` | App-shell assets only — `images/logo.gif`, `translations/{en,ar}.json` (photos + 3D model come from the API) |
+| `backend/app/Http/Controllers/Api/V1/MediaController.php` | Serves photos + the 3D model over the API with CORS |
 | `mobile/README.md` | Mobile-specific readme |
 | `mobile/FIREBASE_SETUP.md` | Firebase config details & how to add your own SHA-1 |
 | `backend/app/`, `backend/routes/api.php` | Controllers, resources, API routes |

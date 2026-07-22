@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContentController;
 use App\Http\Controllers\Api\V1\FavoriteController;
+use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\Api\V1\RecipeController;
 use App\Http\Controllers\Api\V1\VarietyController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     // Everything in one request — handy for mobile app bootstrap / offline cache.
     Route::get('/overview', [ContentController::class, 'overview'])->name('overview');
+
+    // App media (potato photos + the 3D model) served through the API so the
+    // CORS headers from config/cors.php apply (web build + 3D-model WebView).
+    Route::get('/media/{path}', [MediaController::class, 'show'])
+        ->where('path', '.*')
+        ->name('media.show');
 
     // Requires a Sanctum bearer token
     Route::middleware('auth:sanctum')->group(function () {

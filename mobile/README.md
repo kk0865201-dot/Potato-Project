@@ -24,7 +24,7 @@ Flutter app for the Final Project, built on top of the Midterm Project. All data
 - Settings: Light/Dark mode (persisted) + English/Arabic localization + logout
 - Every API call has loading / error / empty / retry states; friendly messages
   for no-internet, timeout, 401, 403, 404, 422, 500
-- **All media is bundled** in `assets/` (model, logo, photos) — no external CDN
+- **Photos + 3D model come from the backend API** (`/api/v1/media/...`, CORS-enabled); only the logo + translations are bundled
 
 ## Architecture
 
@@ -38,7 +38,7 @@ lib/
   screens/       splash, onboarding, login, signup, main shell, home, details,
                  recipes, recipe details, favorites, settings, profile
   widgets/       AppTextField, PrimaryButton, PotatoCard, FavoriteButton, StatusView,
-                 RemoteImage (bundled-asset-first), Potato3DViewer, PotatoBackground
+                 RemoteImage (network, API-served), Potato3DViewer, PotatoBackground
   routes/        named route table
   utils/         Debouncer, ViewState
 ```

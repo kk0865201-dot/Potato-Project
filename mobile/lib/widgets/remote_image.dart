@@ -3,24 +3,23 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
 
-/// Shows a potato photo, preferring the copy **bundled inside the app** so
-/// images always render — offline, on web (no CORS), and with no dependency on
-/// the Laravel server or any external media.
+/// Shows a photo fetched from the backend API.
 ///
-/// The API still drives the data; this widget just maps the API `image_url`
-/// (e.g. `.../assets/photos/russet.jpg`) to the matching bundled asset
-/// `assets/photos/russet.jpg`. If a photo isn't bundled (e.g. a brand-new item
-/// added on the server), it falls back to the network URL, then to an icon.
+/// The app is fully API-driven: photos come from the Laravel backend via
+/// `image_url` (served under `/api/v1/media/...`, which carries CORS headers so
+/// it also works on the web build). `cached_network_image` caches each photo
+/// on-device after the first load. A spinner shows while loading and a friendly
+/// icon if the image can't be fetched.
 class RemoteImage extends StatelessWidget {
   final String url;
   final BoxFit fit;
   final double? width;
   final double? height;
 
-  /// Tint for the placeholder spinner and the final fallback icon.
+  /// Tint for the loading spinner and the fallback icon.
   final Color accentColor;
 
-  /// Icon shown only when neither a bundled asset nor the network image loads.
+  /// Icon shown when the image can't be loaded.
   final IconData fallbackIcon;
 
   const RemoteImage({
@@ -33,32 +32,8 @@ class RemoteImage extends StatelessWidget {
     this.fallbackIcon = Icons.eco,
   });
 
-  /// `assets/photos/<filename>` derived from the last path segment of [url].
-  String? get _assetPath {
-    final name = Uri.tryParse(url)?.pathSegments.lastOrNull;
-    if (name == null || name.isEmpty) return null;
-    return 'assets/photos/$name';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final asset = _assetPath;
-
-    // Bundled asset first — instant, offline, and CORS-free on web.
-    if (asset != null) {
-      return Image.asset(
-        asset,
-        fit: fit,
-        width: width,
-        height: height,
-        errorBuilder: (context, error, stackTrace) => _networkOrIcon(),
-      );
-    }
-    return _networkOrIcon();
-  }
-
-  /// Only reached when the photo isn't part of the app bundle.
-  Widget _networkOrIcon() {
     return CachedNetworkImage(
       imageUrl: url,
       fit: fit,
@@ -71,15 +46,13 @@ class RemoteImage extends StatelessWidget {
           child: CircularProgressIndicator(strokeWidth: 2, color: accentColor),
         ),
       ),
-      errorWidget: (context, url, error) => _icon(),
-    );
-  }
-
-  Widget _icon() => Center(
+      errorWidget: (context, url, error) => Center(
         child: Icon(
           fallbackIcon,
           size: 48,
           color: accentColor.withValues(alpha: 0.6),
         ),
-      );
+      ),
+    );
+  }
 }

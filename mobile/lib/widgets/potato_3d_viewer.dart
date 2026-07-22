@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
+import '../constants/api_constants.dart';
 import '../constants/app_colors.dart';
 
 /// The interactive 3D potato from the web app's hero, brought into the mobile
@@ -43,10 +43,11 @@ class Potato3DViewer extends StatelessWidget {
         children: [
           Positioned.fill(
             child: ModelViewer(
-              // Both copies are bundled with the app (no CDN / external media):
-              //  • mobile serves the model from assets via a local proxy;
-              //  • web fetches it from web/potato.glb at the site root.
-              src: kIsWeb ? 'potato.glb' : 'assets/models/potato.glb',
+              // Fully API-driven: the model is fetched from the backend at
+              // `/api/v1/media/models/potato.glb`. That route sends CORS headers
+              // (config/cors.php), which the model-viewer WebView requires for a
+              // cross-origin .glb — on both mobile and web.
+              src: '${ApiConstants.baseUrl}/api/v1/media/models/potato.glb',
               alt: 'A 3D model of a potato',
               ar: false,
               // Load immediately instead of waiting for a "visible" signal —

@@ -67,11 +67,11 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  # Photos and the 3D model are fetched from the backend API at runtime
+  # (see RemoteImage / Potato3DViewer), so only the app-shell assets are bundled.
   assets:
     - assets/images/
     - assets/translations/
-    - assets/photos/
-    - assets/models/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
