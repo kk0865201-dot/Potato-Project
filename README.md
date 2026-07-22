@@ -67,7 +67,7 @@ Deploying your own copy of the backend? See **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 | **API page (8)** — fetch a real REST API, loading spinner, error state, modern cards with images | `screens/home_screen.dart` + `recipes_screen.dart`, `services/api_client.dart`, `widgets/{status_view,potato_card,remote_image}.dart` | ✅ |
 | **Favorites (3)** — heart on every list item, add/remove via Provider, dedicated Favorites page, empty state, stays in sync everywhere | `providers/favorites_provider.dart`, `widgets/favorite_button.dart`, `screens/favorites_screen.dart` | ✅ |
 | **Code quality (20)** — screens/widgets/providers/services folders, reusable widgets, explainable | whole `mobile/lib/` (see architecture below) | ✅ |
-| **Bonus — Google Sign-In (2)** — "Continue with Google" via `firebase_auth` + `google_sign_in`, lands on Home | `login_screen.dart` → `auth_provider.loginWithGoogle()` → `firebase_auth_service.signInWithGoogle()` | ✅ |
+| **Bonus — Google Sign-In (2)** — "Continue with Google" (web via Firebase's popup, Android via `google_sign_in`), lands on Home | `login_screen.dart` → `auth_provider.loginWithGoogle()` → `firebase_auth_service.signInWithGoogle()` | ✅ |
 
 ### A note on the API (beyond the brief)
 
@@ -137,12 +137,19 @@ SHA-1. The course guide explicitly allows committing `google-services.json` *to 
 private repo*, which this is. They're committed so the grader doesn't need to
 create a Firebase project.
 
-- **Email/Password sign-in works out of the box** on any machine.
-- **Google Sign-In on Android** additionally needs *that machine's* debug SHA-1
-  registered in the Firebase console (Google ties Google Sign-In to the signing
-  key). It works on the original dev machine; on a new machine, either add its
-  SHA-1 or grade Google Sign-In via the visible "Continue with Google" button +
-  its code. Steps: `mobile/FIREBASE_SETUP.md`.
+- **Email/Password sign-in works out of the box** on any machine — on both
+  Android and web.
+- **Google Sign-In** works on both platforms, via two paths:
+  - **Web** uses Firebase's own Google popup (`signInWithPopup`), which works on
+    any Firebase-authorized domain. `localhost` is authorized by default, so
+    running the web build locally needs no extra setup. (`google_sign_in` 7.x has
+    no programmatic sign-in on web, which is why the web path goes through
+    Firebase directly.)
+  - **Android** additionally needs *that machine's* debug SHA-1 registered in the
+    Firebase console (Google ties Google Sign-In to the signing key). It works on
+    the original dev machine; on a new machine, either add its SHA-1 or grade
+    Google Sign-In via the visible "Continue with Google" button + its code.
+    Steps: `mobile/FIREBASE_SETUP.md`.
 
 ### How auth ties into the backend
 

@@ -74,8 +74,10 @@ favorites & profile stay per-user (see root README for the full explanation).
 
 The Firebase client config (`lib/firebase_options.dart`,
 `android/app/google-services.json`) is included, so email/password auth works
-immediately. Google Sign-In on a new machine needs that machine's debug SHA-1 in
-the Firebase console — see [`FIREBASE_SETUP.md`](FIREBASE_SETUP.md).
+immediately on both Android and web. **Google Sign-In on web** uses Firebase's
+popup and works on `localhost` out of the box; **on Android** it needs *that
+machine's* debug SHA-1 in the Firebase console — see
+[`FIREBASE_SETUP.md`](FIREBASE_SETUP.md).
 
 > This build targets **Android** and **Web** (both verified). The `windows/`,
 > `linux/`, and `macos/` desktop folders were omitted to keep the submission
